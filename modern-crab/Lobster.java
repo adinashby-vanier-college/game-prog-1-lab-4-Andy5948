@@ -14,7 +14,7 @@ public class Lobster extends Actor
      */
     public Lobster()
     {
-        turn(Greenfoot.getRandomNumber(360));
+        turn(Greenfoot.getRandomNumber(359));
     }
 
     /**
@@ -23,6 +23,12 @@ public class Lobster extends Actor
     public void act()
     {
         moveAround();
+        eat();
+        addLobster();
+        removeObject();
+        if (isGameLost()) {
+            transitionToGameLostWorld();
+        }
     }
 
     /**
@@ -36,6 +42,67 @@ public class Lobster extends Actor
         }
         if (isAtEdge()) {
             turn(180);
+        }
+    }
+
+    /**
+     * 
+     */
+    public void eat()
+    {
+        Actor crab = getOneIntersectingObject(Crab.class);
+        if (crab != null) {
+            World world = getWorld();
+            world.removeObject(crab);
+            Greenfoot.playSound("scream.mp3");
+        }
+    }
+
+    /**
+     * 
+     */
+    public boolean isGameLost()
+    {
+        World world = getWorld();
+        if (world.getObjects(Crab.class).isEmpty()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * 
+     */
+    public void transitionToGameLostWorld()
+    {
+        World gameLostWorld =  new  GameLostWorld();
+        Greenfoot.setWorld(gameLostWorld);
+    }
+
+    /**
+     * 
+     */
+    public void addLobster()
+    {
+        Actor worm = getOneIntersectingObject(Worm.class);
+        if (worm != null) {
+            World world = getWorld();
+            world.addObject( new  Lobster(), worm.getX(), worm.getY());
+        }
+    }
+
+    /**
+     * 
+     */
+    public void removeObject()
+    {
+        Actor worm = getOneIntersectingObject(Worm.class);
+        if (worm != null) {
+            World world = getWorld();
+            world.removeObject(worm);
+            addLobster();
         }
     }
 }
